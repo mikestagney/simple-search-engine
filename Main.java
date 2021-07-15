@@ -22,20 +22,21 @@ public class Main {
 
         for (int i = 0; i < searchNumber; i++) {
             System.out.println("Enter data to search people:");
-            String holder = input.nextLine();
+            String query = input.nextLine();
 
-            StringBuilder result = new StringBuilder();
-
-            String temp = people.get(i);
-            if (temp.toLowerCase(Locale.ROOT).contains(holder.toLowerCase(Locale.ROOT))) {
-                result.append(temp);
-                result.append("\n");
+            StringBuilder result = new StringBuilder("");
+            for (String person : people) {
+                if (person.toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT))) {
+                    result.append(person);
+                    result.append("\n");
+                }
             }
-            if (result == null) {
+            if (result.length() == 0) {
                 System.out.println("No matching people found");
             } else {
                 System.out.println(result);
             }
+
         }
 
     }
