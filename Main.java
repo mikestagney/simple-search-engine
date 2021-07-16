@@ -1,5 +1,7 @@
 package search;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -8,7 +10,8 @@ public class Main {
     static ArrayList<String> people = new ArrayList<>();
 
     public static void main(String[] args) {
-        enterAllPeople();
+        // enterAllPeople();
+        readPeopleFromFile(args);
 
         while(true) {
             printMenu();
@@ -30,6 +33,28 @@ public class Main {
             }
         }
     }
+    static void readPeopleFromFile(String[] args) {
+        String fileName = "";
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--data") && i + 1 < args.length) {
+                fileName = args[i + 1];
+            }
+        }
+        if (fileName.equals("")) {
+            System.out.println("No filename given!");
+            return;
+        }
+        File file = new File(fileName);
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNext()) {
+                people.add(scanner.nextLine());
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found!");
+        }
+    }
+
     static void enterAllPeople() {
         System.out.println("Enter the number of people:");
         int number = Integer.parseInt(getInputFromUser());
