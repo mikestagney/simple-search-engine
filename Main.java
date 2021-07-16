@@ -2,16 +2,16 @@ package search;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     static Scanner input = new Scanner(System.in);;
     static ArrayList<String> people = new ArrayList<>();
+    static Map<String, Set<Integer>> invertedIndex = new HashMap<>();
 
     public static void main(String[] args) {
-        // enterAllPeople();
         readPeopleFromFile(args);
+        setUpInvertedIndex();
 
         while(true) {
             printMenu();
@@ -30,6 +30,21 @@ public class Main {
                 default:
                     System.out.println("Incorrect option! Try again.");
                     break;
+            }
+        }
+    }
+    static void setUpInvertedIndex() {
+        for (int index = 0; index < people.size(); index++) {
+            String[] wordsOnLine = people.get(index).split(" ");
+            for (String word : wordsOnLine) {
+                if (invertedIndex.containsKey(word)) {
+                    Set<Integer> tempSet = invertedIndex.get(word);
+                    tempSet.add(index);
+                    invertedIndex.put(word, tempSet);
+                } else {
+                    Set<Integer> newSet = new HashSet<>(index);
+                    invertedIndex.put(word, newSet);
+                }
             }
         }
     }
