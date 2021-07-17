@@ -35,14 +35,15 @@ public class Main {
     }
     static void setUpInvertedIndex() {
         for (int index = 0; index < people.size(); index++) {
-            String[] wordsOnLine = people.get(index).split(" ");
+            String[] wordsOnLine = people.get(index).toLowerCase().split(" ");
             for (String word : wordsOnLine) {
                 if (invertedIndex.containsKey(word)) {
                     Set<Integer> tempSet = invertedIndex.get(word);
                     tempSet.add(index);
                     invertedIndex.put(word, tempSet);
                 } else {
-                    Set<Integer> newSet = new HashSet<>(index);
+                    Set<Integer> newSet = new HashSet<>();
+                    newSet.add(index);
                     invertedIndex.put(word, newSet);
                 }
             }
@@ -88,17 +89,19 @@ public class Main {
         System.out.println("0. Exit");
     }
     static void search() {
-        System.out.println("Enter a name or email to search all suitable people:");
-        String query = getInputFromUser();
+        System.out.println("Select a matching strategy: ALL, ANY, NONE");
+        String strategy = getInputFromUser().toUpperCase();
 
-        boolean isFound = false;
-        for (String person : people) {
-            if (person.toLowerCase().contains(query.toLowerCase())) {
-                System.out.println(person);
-                isFound = true;
+        System.out.println("Enter a name or email to search all suitable people:");
+        String query = getInputFromUser().toLowerCase();
+
+        if (invertedIndex.containsKey(query)) {
+            Set<Integer> indexes = invertedIndex.get(query);
+            System.out.printf("%d persons found:\n", indexes.size());
+            for (int currentIndex : indexes) {
+                System.out.println(people.get(currentIndex));
             }
-        }
-        if (!isFound) {
+        } else {
             System.out.println("No matching people found");
         }
     }
