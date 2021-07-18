@@ -95,15 +95,24 @@ public class Main {
         System.out.println("Enter a name or email to search all suitable people:");
         String query = getInputFromUser().toLowerCase();
 
-        if (invertedIndex.containsKey(query)) {
-            Set<Integer> indexes = invertedIndex.get(query);
-            System.out.printf("%d persons found:\n", indexes.size());
-            for (int currentIndex : indexes) {
-                System.out.println(people.get(currentIndex));
-            }
-        } else {
-            System.out.println("No matching people found");
+        String[] words = query.split(" ");
+        Set<Integer> results;
+
+        switch (strategy) {
+            case("ANY"):
+                results = searchAny(words);
+                break;
+            case("ALL"):
+                results = searchAll(words);
+                break;
+            case("NONE"):
+                results = searchNone(words);
+                break;
+            default:
+                System.out.printf("%s strategy doesn't exist!\n", strategy);
+                return;
         }
+        printSearchResults(results);
     }
     static void printAllPeople() {
         System.out.println("=== List of people ===");
@@ -112,4 +121,52 @@ public class Main {
     static String getInputFromUser() {
         return input.nextLine();
     }
+
+    static Set<Integer> searchAny(String[] words) {
+        Set<Integer> lines  = new HashSet<>();
+
+        for (String word: words) {
+            if (invertedIndex.containsKey(word)) {
+                lines.addAll(invertedIndex.get(word));
+            }
+        }
+        return lines;
+    }
+    static Set<Integer> searchAll(String[] words) {
+        Set<Integer> lines  = new HashSet<>();
+        if (invertedIndex.containsKey(words[0])) {
+            lines.addAll(invertedIndex.get(words[0]));
+        }
+        for (int i = 1; i < words.length; i++) {
+            if (lines.size() > 0 && !invertedIndex.containsKey(words[i])) {
+                lines.removeAll(invertedIndex.get(words[i]));
+            }
+        }
+        return lines;
+    }
+    static Set<Integer> searchNone(String[] words) {
+        Set<Integer> lines  = new HashSet<>();
+        for (int index = 0; index < people.size(); index++) {
+            lines.add(index);
+        }
+        for (String word: words) {
+            if (invertedIndex.containsKey(word)) {
+                lines.removeAll(invertedIndex.get(word));
+            }
+        }
+        return lines;
+    }
+
+    static void printSearchResults(Set<Integer> results) {
+        if (results.size() > 0) {
+            System.out.printf("%d persons found:\n", results.size());
+            for (int currentIndex : results) {
+                System.out.println(people.get(currentIndex));
+            }
+        } else {
+            System.out.println("No matching people found");
+        }
+    }
+
+
 }
